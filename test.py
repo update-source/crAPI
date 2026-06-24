@@ -7,7 +7,7 @@ import time
 KEYCLOAK_TOKEN_URL = "http://localhost:8081/realms/crapi-realm/protocol/openid-connect/token"
 
 # IP Public của máy ảo Oracle chứa API Gateway
-API_GATEWAY_URL = "http://129.150.33.153:8888/  "
+API_GATEWAY_URL = "http://129.150.33.153:8888/workshop/api/shop/products  "
 
 # Thông tin xác thực (Keycloak Client & User)
 AUTH_PAYLOAD = {
@@ -47,7 +47,7 @@ def main():
     # BƯỚC 2: MANG TOKEN KEYCLOAK ĐI GỌI API GATEWAY
     # (Kong sẽ nhận Token này, thấy hợp lệ, rồi tự động tráo thành Token crAPI bạn đã cấu hình)
     print(f"[2] Đang gửi Request đến Kong Gateway...")
-    
+    print(access_token)
     headers = {
         "Authorization": f"Bearer {access_token}",
         "Content-Type": "application/json"

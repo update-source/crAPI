@@ -67,10 +67,14 @@ services:
       - KONG_PROXY_LISTEN=0.0.0.0:8000, 0.0.0.0:8443 ssl
       - KONG_PLUGINS=bundled,crapi-token-exchange
       - KONG_LUA_PACKAGE_PATH=/opt/?.lua;;
+      - KONG_SSL_CERT=/certs/origin.pem
+      - KONG_SSL_CERT_KEY=/certs/origin.key
     volumes:
       - ./kong:/opt/kong
+      - ./certs:/certs:ro
     ports:
-      - "8888:8000" # Cổng nhận request từ bên ngoài thay thế cho crapi-web trực tiếp
+      - "80:8000" 
+      - "443:8443"
     depends_on:
       - crapi-web
       - keycloak
