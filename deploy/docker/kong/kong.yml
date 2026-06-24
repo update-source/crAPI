@@ -29,6 +29,19 @@ services:
             config:
               service_email: "service@gmail.com" # ĐIỀN TÀI KHOẢN CRAPI CỦA BẠN
               service_password: "Admin!123"
+          - name: rate-limiting
+            config:
+              minute: 60
+              hour: 1000
+              limit_by: ip
+              policy: local
+plugins:
+  - name: correlation-id
+    config:
+      header_name: X-Request-ID
+      generator: uuid
+      echo_downstream: true
+
 consumers:
   # Tạo một "Thực thể" đại diện cho máy chủ Keycloak bên trong Kong
   - username: keycloak-issuer
