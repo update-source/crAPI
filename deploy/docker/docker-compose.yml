@@ -38,6 +38,8 @@ services:
       - KONG_DECLARATIVE_CONFIG=/opt/kong/kong.yml
       - KONG_LOG_LEVEL=info
       - KONG_PROXY_LISTEN=0.0.0.0:8000, 0.0.0.0:8443 ssl
+      - KONG_PLUGINS=bundled,crapi-token-exchange
+      - KONG_LUA_PACKAGE_PATH=/opt/?.lua;;
     volumes:
       - ./kong:/opt/kong
     ports:
@@ -45,6 +47,9 @@ services:
     depends_on:
       - crapi-web
       - keycloak
+      - crapi-identity
+    links:
+      - crapi-identity:crapi-identity
   crapi-identity:
     container_name: crapi-identity
     image: crapi/crapi-identity:${VERSION:-latest}

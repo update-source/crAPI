@@ -1,0 +1,50 @@
+_format_version: "3.0"
+_transform: true
+
+services:
+  - name: crapi-backend
+    url: http://crapi-web:80
+    routes:
+      # 1. Luồng không bảo vệ (Cho phép tải giao diện Web HTML/CSS/JS)
+      - name: public-frontend
+        paths:
+          - /identity/api/auth
+          - /
+        strip_path: false
+
+      # 2. Luồng bảo mật nghiêm ngặt (Chỉ cho phép API đi qua nếu có Token)
+      - name: secure-api
+        paths:
+          - /workshop/api
+        strip_path: false
+        plugins:
+          # Áp dụng plugin JWT riêng biệt cho luồng số 2
+          - name: jwt
+            config:
+              key_claim_name: iss
+              claims_to_verify:
+                - exp
+
+          - name: crapi-token-exchange
+            config:
+              service_email: "service@gmail.com" # ĐIỀN TÀI KHOẢN CRAPI CỦA BẠN
+              service_password: "Admin!123"
+consumers:
+  # Tạo một "Thực thể" đại diện cho máy chủ Keycloak bên trong Kong
+  - username: keycloak-issuer
+
+jwt_secrets:
+  # Gắn Public Key của Keycloak vào Thực thể này
+  - consumer: keycloak-issuer
+    key: http://localhost:8081/realms/crapi-realm
+    algorithm: RS256
+    rsa_public_key: |
+      -----BEGIN PUBLIC KEY-----
+      MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAy6GyIu2YFMhjZegu+yb3
+      MuZwroOd9Ox+MVLXNFXlqFdu2VCBARbewzfWVWf4aAFWZ5TwIsLzBFemouxl7Ogi
+      xZHtjUV0PVwI5tSbCsy1BfC0gh8UMIYyac80BD8rC8KQLlgnatedBaWxxIBz/RoF
+      mKfF9Hmj2RlouJBdbVMEd/gqHYzo/raMHHMQsoj2IoGxxVjfnBvd5D9WzZeE8/0L
+      qk6zetl335wahd23v0zk3D1qC98h/BiFrusJXHHZAUdXhso9Fu8LYo9jeJ5YQB7b
+      nGTO2MRfE7g4oYUS09AmTz5Foc0baPz8f0aPUJjbBbAMHKYnwCECy3LPv/d6ptyK
+      ewIDAQAB
+      -----END PUBLIC KEY-----
