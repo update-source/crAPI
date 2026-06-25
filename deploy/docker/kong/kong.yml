@@ -18,12 +18,6 @@ services:
           - /workshop/api
         strip_path: false
         plugins:
-          # Áp dụng plugin JWT riêng biệt cho luồng số 2
-          - name: jwt
-            config:
-              key_claim_name: kid
-              claims_to_verify:
-                - exp
           - name: rate-limiting
             config:
               minute: 60
