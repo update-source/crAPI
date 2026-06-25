@@ -3,7 +3,7 @@ server:
   grpc_listen_port: 0
 
 positions:
-  filename: /tmp/positions.yaml
+  filename: /var/lib/promtail/positions.yaml
 
 clients:
   - url: http://loki:3100/loki/api/v1/push
@@ -16,3 +16,9 @@ scrape_configs:
         labels:
           job: docker
           __path__: /var/lib/docker/containers/*/*-json.log
+    pipeline_stages:
+      - docker: {}
+    relabel_configs:
+      - source_labels: [__path__]
+        regex: .*/([^/]+)-json\.log
+        target_label: container_id

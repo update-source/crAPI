@@ -1,0 +1,52 @@
+{
+  "annotations": {"list": []},
+  "editable": false,
+  "graphTooltip": 0,
+  "panels": [
+    {
+      "datasource": {"type": "loki", "uid": "loki"},
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0},
+      "id": 1,
+      "options": {"dedupStrategy": "none", "enableLogDetails": true, "prettifyLogMessage": false, "showLabels": true, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true},
+      "targets": [{"expr": "{job=\"docker\"}", "queryType": "range", "refId": "A"}],
+      "title": "Live Docker Logs",
+      "type": "logs"
+    },
+    {
+      "datasource": {"type": "loki", "uid": "loki"},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "id": 2,
+      "options": {"legend": {"displayMode": "list", "placement": "bottom"}, "tooltip": {"mode": "single"}},
+      "targets": [{"expr": "sum(count_over_time({job=\"docker\"}[5m]))", "legendFormat": "logs/5m", "queryType": "range", "refId": "A"}],
+      "title": "Log Volume",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "loki", "uid": "loki"},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "id": 3,
+      "options": {"legend": {"displayMode": "list", "placement": "bottom"}, "tooltip": {"mode": "single"}},
+      "targets": [{"expr": "sum(count_over_time({job=\"docker\"} |~ \"(?i)error|exception|traceback|fatal\" [5m]))", "legendFormat": "errors/5m", "queryType": "range", "refId": "A"}],
+      "title": "Error-like Logs",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "loki", "uid": "loki"},
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16},
+      "id": 4,
+      "options": {"showHeader": true, "sortBy": [{"displayName": "Value", "desc": true}]},
+      "targets": [{"expr": "topk(10, sum by (container_id) (count_over_time({job=\"docker\"}[5m])))", "queryType": "instant", "refId": "A"}],
+      "title": "Top Containers by Log Volume",
+      "type": "table"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": ["docker", "logs", "loki"],
+  "templating": {"list": []},
+  "time": {"from": "now-1h", "to": "now"},
+  "title": "Docker Logs Overview",
+  "uid": "docker-logs-overview",
+  "version": 1
+}

@@ -1,0 +1,116 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: docker-log-alerts
+    folder: Docker Logs
+    interval: 1m
+    rules:
+      - uid: docker_error_spike
+        title: Docker error spike
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: loki
+            model:
+              datasource:
+                type: loki
+                uid: loki
+              editorMode: code
+              expr: sum(count_over_time({job="docker"} |~ "(?i)error|exception|traceback|fatal" [5m]))
+              instant: true
+              maxDataPoints: 43200
+              queryType: range
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 5
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: threshold
+        noDataState: NoData
+        execErrState: Error
+        for: 2m
+        annotations:
+          summary: Error-like log volume exceeded threshold in the last 5 minutes.
+        labels:
+          severity: warning
+      - uid: docker_log_silence
+        title: Docker log silence
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: loki
+            model:
+              datasource:
+                type: loki
+                uid: loki
+              editorMode: code
+              expr: sum(count_over_time({job="docker"} [10m]))
+              instant: true
+              maxDataPoints: 43200
+              queryType: range
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: threshold
+        noDataState: Alerting
+        execErrState: Error
+        for: 5m
+        annotations:
+          summary: No Docker logs were ingested in the last 10 minutes.
+        labels:
+          severity: critical

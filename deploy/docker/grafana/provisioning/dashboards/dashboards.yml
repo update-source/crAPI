@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: docker-logs
+    orgId: 1
+    folder: Docker Logs
+    type: file
+    disableDeletion: false
+    allowUiUpdates: false
+    options:
+      path: /var/lib/grafana/dashboards
