@@ -3,18 +3,16 @@ auth_enabled: false
 server:
   http_listen_port: 3100
 
-ingester:
-  lifecycler:
-    address: 127.0.0.1
-    ring:
-      kvstore:
-        store: inmemory
-      replication_factor: 1
-    final_sleep: 0s
-  chunk_idle_period: 1h
-  max_chunk_age: 1h
-  chunk_target_size: 1048576
-  chunk_retain_period: 30s
+common:
+  path_prefix: /loki
+  replication_factor: 1
+  ring:
+    kvstore:
+      store: inmemory
+  storage:
+    filesystem:
+      chunks_directory: /loki/chunks
+      rules_directory: /loki/rules
 
 schema_config:
   configs:
@@ -27,13 +25,13 @@ schema_config:
         period: 24h
 
 storage_config:
-  filesystem:
-    chunks_directory: /loki/chunks
-    rules_directory: /loki/rules
+  tsdb_shipper:
+    active_index_directory: /loki/index
+    cache_location: /loki/index_cache
 
-tsdb_shipper:
-  active_index_directory: /loki/index
-  cache_location: /loki/index_cache
+ingester:
+  wal:
+    dir: /loki/wal
 
 compactor:
   working_directory: /loki/compactor
@@ -43,16 +41,3 @@ compactor:
 limits_config:
   retention_period: 168h
   allow_structured_metadata: false
-
-ruler:
-  storage:
-    type: local
-    local:
-      directory: /loki/rules
-  rule_path: /loki/rules-temp
-  alertmanager_url: http://localhost:9093
-  enable_alertmanager_v2: true
-
-common:
-  path_prefix: /loki
-  replication_factor: 1

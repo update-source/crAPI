@@ -35,7 +35,7 @@
       "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16},
       "id": 4,
       "options": {"showHeader": true, "sortBy": [{"displayName": "Value", "desc": true}]},
-      "targets": [{"expr": "topk(10, sum by (container_id) (count_over_time({job=\"docker\"}[5m])))", "queryType": "instant", "refId": "A"}],
+      "targets": [{"expr": "topk(10, sum by (container, compose_service) (count_over_time({job=\"docker\"}[5m])))", "queryType": "instant", "refId": "A"}],
       "title": "Top Containers by Log Volume",
       "type": "table"
     }

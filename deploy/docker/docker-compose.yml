@@ -14,6 +14,8 @@ services:
   loki:
     image: grafana/loki:2.9.0
     container_name: loki
+    labels:
+      logging: promtail-exclude
     ports:
       - "3100:3100"
     command: -config.file=/etc/loki/config.yml
@@ -30,6 +32,8 @@ services:
     image: grafana/promtail:2.9.0
     container_name: promtail
     user: root
+    labels:
+      logging: promtail-exclude
     volumes:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -51,6 +55,11 @@ services:
     container_name: grafana
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_UNIFIED_ALERTING_ENABLED=true
+      - GF_ALERTING_ENABLED=false
+      - GF_SMTP_ENABLED=false
+    labels:
+      logging: promtail-exclude
     ports:
       - "3000:3000"
     volumes:
