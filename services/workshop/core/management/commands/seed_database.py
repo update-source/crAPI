@@ -30,8 +30,10 @@ from django.utils import timezone
 import psycopg2
 from crapi_site import settings
 import requests
+from pathlib import Path
 
 logger = logging.getLogger()
+TRUSTED_CERT_PATH = str(Path(__file__).resolve().parents[4] / "certs" / "server.crt")
 
 
 def create_products():
@@ -217,7 +219,7 @@ def ping_identity_server():
         headers = {
             "Accept": "*/*",
         }
-        request = requests.get(identity_health_url, headers, verify=False)
+        request = requests.get(identity_health_url, headers, verify=TRUSTED_CERT_PATH)
         if request.status_code == 200:
             return True
         else:

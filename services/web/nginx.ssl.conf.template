@@ -32,7 +32,9 @@ server {
     sub_filter_types application/json text/html;
     sub_filter "${HTTP_PROTOCOL}://${COMMUNITY_SERVICE}" "$scheme://$http_host";
     sub_filter_once off;
-    proxy_ssl_verify off;
+    proxy_ssl_server_name on;
+    proxy_ssl_name ${COMMUNITY_SERVICE};
+    proxy_ssl_verify on;
     proxy_ssl_trusted_certificate /app/certs/server.crt;
   }
 
@@ -49,7 +51,9 @@ server {
     proxy_set_header Host ${IDENTITY_SERVICE};
     proxy_set_header X-Forwarded-Host $http_host;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_ssl_verify off;
+    proxy_ssl_server_name on;
+    proxy_ssl_name ${IDENTITY_SERVICE};
+    proxy_ssl_verify on;
     proxy_ssl_trusted_certificate /app/certs/server.crt;
   }
 
@@ -69,7 +73,9 @@ server {
     sub_filter_types application/json text/html;
     sub_filter "${HTTP_PROTOCOL}://${WORKSHOP_SERVICE}" "$scheme://$http_host";
     sub_filter_once off;
-    proxy_ssl_verify off;
+    proxy_ssl_server_name on;
+    proxy_ssl_name ${WORKSHOP_SERVICE};
+    proxy_ssl_verify on;
     proxy_ssl_trusted_certificate /app/certs/server.crt;
   }
 
@@ -89,7 +95,9 @@ server {
     sub_filter_types application/json text/html;
     sub_filter "${HTTP_PROTOCOL}://${CHATBOT_SERVICE}" "$scheme://$http_host";
     sub_filter_once off;
-    proxy_ssl_verify off;
+    proxy_ssl_server_name on;
+    proxy_ssl_name ${CHATBOT_SERVICE};
+    proxy_ssl_verify on;
     proxy_ssl_trusted_certificate /app/certs/server.crt;
   }
 
@@ -110,7 +118,9 @@ server {
 
   location /.well-known/jwks.json {
     proxy_pass ${HTTP_PROTOCOL}://${IDENTITY_SERVICE}/identity/api/auth/jwks.json;
-    proxy_ssl_verify off;
+    proxy_ssl_server_name on;
+    proxy_ssl_name ${IDENTITY_SERVICE};
+    proxy_ssl_verify on;
     proxy_ssl_trusted_certificate /app/certs/server.crt;
   }
 

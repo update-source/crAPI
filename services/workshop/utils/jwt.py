@@ -16,6 +16,7 @@ Contains all the methods related to jwt token
 import requests
 import jwt
 from functools import wraps
+from pathlib import Path
 from rest_framework import status
 from rest_framework.response import Response
 from django.conf import settings
@@ -27,6 +28,7 @@ import logging
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 logger = logging.getLogger()
+TRUSTED_CERT_PATH = str(Path(__file__).resolve().parents[1] / "certs" / "server.crt")
 
 
 def jwt_auth_required(func):
@@ -51,7 +53,7 @@ def jwt_auth_required(func):
                 identity_url = settings.IDENTITY_VERIFY
                 logger.debug(f"Identity url: {identity_url}, tokenJson: {tokenJson}")
                 token_verify_response = requests.post(
-                    identity_url, json=tokenJson, verify=False
+                    identity_url, json=tokenJson, verify=TRUSTED_CERT_PATH
                 )
                 logger.debug(
                     f"Identity url: {identity_url}, token_verify_response: {token_verify_response}"

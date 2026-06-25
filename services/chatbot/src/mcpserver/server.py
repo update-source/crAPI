@@ -25,6 +25,7 @@ BASE_URL = f"{'https' if Config.TLS_ENABLED else 'http'}://{Config.WEB_SERVICE}"
 BASE_IDENTITY_URL = (
     f"{'https' if Config.TLS_ENABLED else 'http'}://{Config.IDENTITY_SERVICE}"
 )
+TRUSTED_CERT_PATH = "/app/certs/server.crt"
 API_KEY = None
 
 
@@ -45,7 +46,7 @@ def get_api_key():
             with httpx.Client(
                 base_url=BASE_URL,
                 headers=headers,
-                verify=False,
+                verify=TRUSTED_CERT_PATH,
             ) as client:
                 response = client.post(auth_url, json=login_body)
                 if response.status_code != 200:
@@ -88,7 +89,7 @@ def get_http_client():
     return httpx.AsyncClient(
         base_url=BASE_URL,
         headers=headers,
-        verify=False,
+        verify=TRUSTED_CERT_PATH,
     )
 
 
@@ -110,7 +111,7 @@ mcp = FastMCP.from_openapi(
 )
 async def get_latest_post_on_topic(topic: str) -> dict:
     """Get the latest blog post matching the given topic."""
-    async with httpx.AsyncClient(base_url=BASE_URL, verify=False) as client:
+    async with httpx.AsyncClient(base_url=BASE_URL, verify=TRUSTED_CERT_PATH) as client:
         headers = {"Authorization": "ApiKey " + get_api_key()}
 
         dashboard = await client.get(
@@ -150,7 +151,7 @@ async def get_latest_post_on_topic(topic: str) -> dict:
 )
 async def debug_web_service(path: str = "") -> dict:
     """Access debug files from the web service."""
-    async with httpx.AsyncClient(base_url=BASE_URL, verify=False) as client:
+    async with httpx.AsyncClient(base_url=BASE_URL, verify=TRUSTED_CERT_PATH) as client:
         response = await client.get(f"/debug/{path}")
         return {"status": response.status_code, "content": response.text}
 

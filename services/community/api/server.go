@@ -16,6 +16,7 @@ package api
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"log"
 	"net/http"
@@ -38,20 +39,37 @@ func init() {
 	}
 }
 
+func NewInternalHTTPClient(serverName string) *http.Client {
+	caCert, err := os.ReadFile("certs/server.crt")
+	if err != nil {
+		log.Fatalf("failed to read trusted certificate: %v", err)
+	}
+	rootCAs := x509.NewCertPool()
+	rootCAs.AppendCertsFromPEM(caCert)
+	return &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				RootCAs:    rootCAs,
+				ServerName: serverName,
+			},
+		},
+	}
+}
+
 func identityServiceHealthCheck() {
 	if os.Getenv("IDENTITY_SERVICE") == "" {
 		time.Sleep(5 * time.Second)
 		log.Fatal("IDENTITY_SERVICE is not set")
 	}
 	var attempts = 0
-	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-	for (attempts <= 5) {
+	client := NewInternalHTTPClient("crapi-identity")
+	for attempts <= 5 {
 		tlsEnabled := os.Getenv("TLS_ENABLED")
 		identityHealthCheckUrl := fmt.Sprintf("http://%s/identity/health_check", os.Getenv("IDENTITY_SERVICE"))
 		if tlsEnabled == "true" {
 			identityHealthCheckUrl = fmt.Sprintf("https://%s/identity/health_check", os.Getenv("IDENTITY_SERVICE"))
 		}
-		resp, err := http.Get(identityHealthCheckUrl)
+		resp, err := client.Get(identityHealthCheckUrl)
 		if err != nil {
 			log.Printf("Error while checking the health of identity service: %v", err)
 			log.Printf("Retrying in 5 seconds...")

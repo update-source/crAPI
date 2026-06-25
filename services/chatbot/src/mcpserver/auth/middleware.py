@@ -5,6 +5,8 @@ import httpx
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
+TRUSTED_CERT_PATH = "/app/certs/server.crt"
+
 logger = logging.getLogger(__name__)
 
 
@@ -71,7 +73,7 @@ class MCPAuthMiddleware:
         """Validate JWT token against identity service."""
         verify_url = f"{self.identity_service_url}/identity/api/auth/verify"
 
-        async with httpx.AsyncClient(verify=False) as client:
+        async with httpx.AsyncClient(verify=TRUSTED_CERT_PATH) as client:
             try:
                 response = await client.post(
                     verify_url,
@@ -104,7 +106,7 @@ class MCPAuthMiddleware:
 
         login_url = f"{self.identity_service_url}/identity/api/auth/login"
 
-        async with httpx.AsyncClient(verify=False) as client:
+        async with httpx.AsyncClient(verify=TRUSTED_CERT_PATH) as client:
             try:
                 response = await client.post(
                     login_url,

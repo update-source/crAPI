@@ -3,7 +3,7 @@ _transform: true
 
 services:
   - name: crapi-backend
-    url: http://crapi-web:80
+    url: https://crapi-web:443
     routes:
       # 1. Luồng không bảo vệ (Cho phép tải giao diện Web HTML/CSS/JS)
       - name: public-frontend
@@ -21,14 +21,9 @@ services:
           # Áp dụng plugin JWT riêng biệt cho luồng số 2
           - name: jwt
             config:
-              key_claim_name: iss
+              key_claim_name: kid
               claims_to_verify:
                 - exp
-
-          - name: crapi-token-exchange
-            config:
-              service_email: "service@gmail.com" # ĐIỀN TÀI KHOẢN CRAPI CỦA BẠN
-              service_password: "Admin!123"
           - name: rate-limiting
             config:
               minute: 60
@@ -43,21 +38,19 @@ plugins:
       echo_downstream: true
 
 consumers:
-  # Tạo một "Thực thể" đại diện cho máy chủ Keycloak bên trong Kong
-  - username: keycloak-issuer
+  - username: crapi-identity-issuer
 
 jwt_secrets:
-  # Gắn Public Key của Keycloak vào Thực thể này
-  - consumer: keycloak-issuer
-    key: http://localhost:8081/realms/crapi-realm
+  - consumer: crapi-identity-issuer
+    key: MKMZkDenUfuDF2byYowDj7tW5Ox6XG4Y1THTEGScRg8
     algorithm: RS256
     rsa_public_key: |
       -----BEGIN PUBLIC KEY-----
-      MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAy6GyIu2YFMhjZegu+yb3
-      MuZwroOd9Ox+MVLXNFXlqFdu2VCBARbewzfWVWf4aAFWZ5TwIsLzBFemouxl7Ogi
-      xZHtjUV0PVwI5tSbCsy1BfC0gh8UMIYyac80BD8rC8KQLlgnatedBaWxxIBz/RoF
-      mKfF9Hmj2RlouJBdbVMEd/gqHYzo/raMHHMQsoj2IoGxxVjfnBvd5D9WzZeE8/0L
-      qk6zetl335wahd23v0zk3D1qC98h/BiFrusJXHHZAUdXhso9Fu8LYo9jeJ5YQB7b
-      nGTO2MRfE7g4oYUS09AmTz5Foc0baPz8f0aPUJjbBbAMHKYnwCECy3LPv/d6ptyK
-      ewIDAQAB
+      MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsZKrGYja9S7BkO+waOcu
+      poGY6BQjixJkg1Uitt278NbiCSnBRw5/cmfuWFFFPgRxabBZBJwJAujnQrlgTLXn
+      RRItM9SRO884cEXn+s4Uc8qwk6pev63qb8no6aCVY0dFpthEGtOP+3KIJ2kx2i5H
+      Nzm8d7fG3ZswZrttDVbSSTy8UjPTOr4xVw1Yyh/GzGK9i/RYBWHftDsVfKrHcgGn
+      1F/T6W0cgcnh4KFmbyOQ7dUy8Uc6Gu8JHeHJVt2vGcn50EDtUy2YN+UnZPjCSC7v
+      YOfd5teUR/Bf4jg8GN6UnLbr/Et8HUnz9RFBLkPIf0NiY6iRjp9ooSDkml2OGql3
+      wwIDAQAB
       -----END PUBLIC KEY-----
