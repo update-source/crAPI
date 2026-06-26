@@ -157,8 +157,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.8'
-          memory: 384M
+          cpus: '2.0'
+          memory: 2G
 
   crapi-community:
     container_name: crapi-community
@@ -199,8 +199,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.3'
-          memory: 192M
+          cpus: '1.0'
+          memory: 1G
 
   crapi-workshop:
     container_name: crapi-workshop
@@ -253,8 +253,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
-          memory: 512M
+          cpus: '2.0'
+          memory: 2G
 
   crapi-chatbot:
     container_name: crapi-chatbot
@@ -354,8 +354,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.3'
-          memory: 128M
+          cpus: '1.0'
+          memory: 512M
 
   postgresdb:
     container_name: postgresdb
@@ -379,8 +379,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
-          memory: 256M
+          cpus: '1.0'
+          memory: 1G
 
   mongodb:
     container_name: mongodb
@@ -403,8 +403,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.3'
-          memory: 128M
+          cpus: '1.0'
+          memory: 512M
 
   chromadb:
     container_name: chromadb
@@ -444,8 +444,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.3'
-          memory: 128M
+          cpus: '1.0'
+          memory: 512M
 
   api.mypremiumdealership.com:
     container_name: api.mypremiumdealership.com
@@ -463,8 +463,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.1'
-          memory: 50M
+          cpus: '0.5'
+          memory: 256M
 
 volumes:
   mongodb-data:
